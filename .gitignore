@@ -1,0 +1,91 @@
+# =========================
+# Build results / Binaries
+# =========================
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Oo]ut/
+publish/
+
+# =========================
+# Example logs
+# =========================
+example/logs/
+!example/logs/
+!example/logs/.keep
+
+# =========================
+# Visual Studio
+# =========================
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.VC.db
+*.VC.VC.opendb
+
+# =========================
+# Test / Temp / Cache
+# =========================
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.VisualState.xml
+*.tmp
+*.bak
+*.swp
+*.log
+*.dbmdl
+*.jfm
+*.opendb
+*.cache
+*.pdb
+
+# =========================
+# NuGet / Paket
+# =========================
+*.nupkg
+project.lock.json
+project.assets.json
+*.nuget.props
+*.nuget.targets
+packages/
+.paket/
+paket-files/
+
+# =========================
+# Windows / System
+# =========================
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# =========================
+# IDE / Tooling
+# =========================
+_ReSharper*/
+*.DotSettings.user
+*.DotCover
+*.idea/
+*.sln.iml
+
+# =========================
+# Keep essentials
+# =========================
+!*.bat
+!*.ps1
+!*.sql
+!*.tmpl
+!*.cs
+!*.csproj
+!*.sln
+!*.config
+!*.json
+!*.xml
+!*.md
+!*.txt
+!LICENSE*
+!README*
+!.keep

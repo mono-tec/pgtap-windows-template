@@ -1,0 +1,82 @@
+@echo off
+setlocal enabledelayedexpansion
+
+REM ============================================================
+REM  pgTAP Full Test Automation for Windows
+REM  （初期構築で #...# を置換して生成）
+REM ============================================================
+
+REM --- [1] 接続設定（生成） ------------------------------------
+set "PGHOST=#PGHOST#"             REM 例: 127.0.0.1
+set "PGPORT=#PGPORT#"             REM 例: 5432
+set "PGUSER=#PGUSER#"             REM 例: postgres
+set "PGPASSWORD=#PGPASSWORD#"     REM ★埋め込み：使い勝手優先
+
+set "PGDATABASE_ADMIN=postgres"   REM 管理用DB（固定推奨）
+set "PGDATABASE_TEST=#PGDATABASE#" REM 任意のテスト対象DB名（例: appdb_test）
+
+set "PGCONNECT_ADMIN=-h %PGHOST% -p %PGPORT% -U %PGUSER% -d %PGDATABASE_ADMIN%"
+set "PGCONNECT_TEST=-h  %PGHOST% -p %PGPORT% -U %PGUSER% -d %PGDATABASE_TEST%"
+
+REM --- [2] サマリ & 確認 ---------------------------------------
+echo =============================================================
+echo  pgTAP Full Test Automation
+echo -------------------------------------------------------------
+echo  Host:       %PGHOST%
+echo  Port:       %PGPORT%
+echo  User:       %PGUSER%
+echo  Admin DB:   %PGDATABASE_ADMIN%
+echo  Test  DB:   %PGDATABASE_TEST%
+echo  Steps:
+echo    1) Create test database   （Admin DBに接続）
+echo    2) Enable pgTAP extension （Test  DBに接続）
+echo    3) Run pgTAP tests        （Test  DBに接続）
+echo    4) Drop test database     （Admin DBに接続）
+echo =============================================================
+choice /c YN /m "この手順を実行しますか？"
+if errorlevel 2 ( echo キャンセルしました。 & pause & exit /b 0 )
+echo.
+
+REM --- [3] Pre-check: 管理DBへ接続確認 -------------------------
+echo [CHECK] Testing connection to Admin DB (%PGDATABASE_ADMIN%)...
+psql %PGCONNECT_ADMIN% -t -A -c "select 1" >nul 2>&1
+if errorlevel 1 (
+  echo [ERROR] 認証/pg_hba.conf を確認してください。
+  echo  例: host all all 127.0.0.1/32 scram-sha-256
+  pause & exit /b 1
+)
+echo [OK] 管理DBへの接続に成功しました。
+echo.
+
+REM --- [STEP 1] Create test DB（管理DB接続） -------------------
+echo [STEP 1] Create test database...
+psql %PGCONNECT_ADMIN% -v ON_ERROR_STOP=1 -f "sql\create_testdb.sql" || (
+  echo [ERROR] テストDBの作成に失敗しました。 & pause & exit /b 1
+)
+
+REM --- [STEP 2] Enable pgTAP（テストDB接続） -------------------
+echo [STEP 2] Enable pgTAP extension on %PGDATABASE_TEST% ...
+psql %PGCONNECT_TEST% -v ON_ERROR_STOP=1 -f "sql\enable_pgtap.sql" || (
+  echo [ERROR] pgTAP拡張のインストールに失敗しました。 & pause & exit /b 1
+)
+
+REM --- [STEP 3] Run tests（テストDB接続） ----------------------
+echo [STEP 3] Run pgTAP tests...
+call run_tests.bat || (
+  echo [ERROR] pgTAPテストの実行に失敗しました。 & pause & exit /b 1
+)
+
+REM --- [STEP 4] Drop test DB（管理DB接続） ---------------------
+echo [STEP 4] Drop test database...
+psql %PGCONNECT_ADMIN% -v ON_ERROR_STOP=1 -f "sql\drop_testdb.sql"
+if errorlevel 1 (
+  echo [WARN] テストDB削除でエラー。手動で確認してください。
+) else (
+  echo [INFO] テストDBを削除しました。
+)
+
+echo.
+echo =============================================================
+echo [DONE] All pgTAP test steps completed successfully.
+pause
+exit /b 0

@@ -1,0 +1,64 @@
+@echo off
+setlocal enabledelayedexpansion
+
+REM ============================================================
+REM  pgTAP Test Runner for Windows
+REM  - pg_prove があれば優先、無ければ psql で実行
+REM  - 接続先は「テスト対象DB」
+REM  - 生成時に #...# を置換して使用
+REM ============================================================
+
+REM --- [1] Database connection (generated) --------------------
+set "PGHOST=#PGHOST#"          REM 例: 127.0.0.1
+set "PGPORT=#PGPORT#"          REM 例: 5432
+set "PGUSER=#PGUSER#"          REM 例: postgres
+set "PGPASSWORD=#PGPASSWORD#"  REM 埋め込み（使い勝手優先）
+
+REM ★ここが重要：テストDB名を使う（adminではなく）
+set "PGDATABASE=#PGDATABASE#"  REM 例: appdb_test
+
+set "PGCONNECT=-h %PGHOST% -p %PGPORT% -U %PGUSER% -d %PGDATABASE%"
+
+REM --- [2] Log directory & file setup ------------------------
+for /f "tokens=1-4 delims=/ " %%a in ("%date%") do set TODAY=%%a%%b%%c
+for /f "tokens=1-4 delims=:." %%a in ("%time%") do set NOW=%%a%%b%%c
+set "NOW=%NOW: =0%"
+set "LOGDIR=logs\%TODAY%"
+if not exist "%LOGDIR%" mkdir "%LOGDIR%"
+set "LOGFILE=%LOGDIR%\pgtap_example_%NOW%.log"
+
+REM --- [3] Summary & confirm ---------------------------------
+echo =============================================================
+echo  pgTAP Test Runner
+echo -------------------------------------------------------------
+echo  Host: %PGHOST%
+echo  Port: %PGPORT%
+echo  User: %PGUSER%
+echo  Test DB: %PGDATABASE%
+echo  Log:  %LOGFILE%
+echo =============================================================
+echo.
+choice /c YN /m "上記の設定でテストを実行しますか？"
+if errorlevel 2 (
+  echo キャンセルしました。
+  pause & exit /b 0
+)
+echo.
+
+REM --- [4] Run tests -----------------------------------------
+where pg_prove >nul 2>&1
+if "%errorlevel%"=="0" (
+  echo [INFO] Running tests with pg_prove...
+  REM 単一ファイル例（複数なら "sql\tests\*.sql" などに変更）
+  pg_prove %PGCONNECT% "sql\test_sample.sql" > "%LOGFILE%" 2>&1
+) else (
+  echo [WARN] pg_prove not found. Falling back to psql...
+  psql %PGCONNECT% -v ON_ERROR_STOP=1 -f "sql\test_sample.sql" > "%LOGFILE%" 2>&1
+)
+
+REM --- [5] Done ----------------------------------------------
+echo.
+echo [INFO] Logs saved to: %LOGFILE%
+echo [DONE] pgTAP test completed.
+pause
+exit /b 0
