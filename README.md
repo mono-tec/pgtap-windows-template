@@ -122,7 +122,36 @@ ROOT:.
 
 ---
 
-## ⚖️ ライセンス
+## 🔐 配布物整合性チェック（InnoReplacer.exe）
+
+このテンプレートで利用している `InnoReplacer.exe` は、
+文字コードを保持したままテンプレートファイルを置換するユーティリティです。
+
+配布ファイルの整合性を確認するには、以下のコマンドを実行します：
+
+```powershell
+CertUtil -hashfile example\tools\InnoReplacer.exe SHA256
+```
+
+実行結果の例：
+```
+SHA256 ハッシュ (対象 InnoReplacer.exe):
+c12b4ee67b0ee0aa4d9922ddb36293504b9887992f6c9a1d7b877d1263bc4458
+CertUtil: -hashfile コマンドは正常に完了しました。
+```
+
+✅ **この SHA256 値**
+```
+c12b4ee67b0ee0aa4d9922ddb36293504b9887992f6c9a1d7b877d1263bc4458
+```
+
+この値と一致していれば、正規の配布物であることを確認できます。
+
+> 備考:
+> - `InnoReplacer.exe` は mono-tec/InnoReplacer でソース公開予定です。
+> - SQL テンプレートは UTF-8（無BOM）、BAT テンプレートは Shift-JIS を維持して生成されます。
+
+---
 
 ## ⚖️ ライセンス
 
