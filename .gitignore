@@ -8,10 +8,35 @@
 publish/
 
 # =========================
+# Bat (テンプレートから生成されるバッチファイルを除外)
+# =========================
+# 自動生成される実行スクリプトを無視
+run_tests.bat
+test_all.bat
+
+# 手動管理のテンプレート・セットアップバッチは除外しない
+!init.bat
+!install_pgtap_windows.bat
+!uninstall_pgtap_windows.bat
+
+# =========================
+# SQL (テンプレートから生成されるSQLを除外)
+# =========================
+# 自動生成されるSQLを無視
+example/sql/*.sql
+
+# ただし .keep は残す
+!example/sql/.keep
+
+# テンプレートSQLは除外しない
+!example/template/*.sql.tmpl
+
+# =========================
 # Example logs
 # =========================
-example/logs/
-!example/logs/
+# 日付フォルダなど example/logs/** 以下を除外
+example/logs/*
+# ただし .keep は残す
 !example/logs/.keep
 
 # =========================
@@ -74,9 +99,7 @@ _ReSharper*/
 # =========================
 # Keep essentials
 # =========================
-!*.bat
 !*.ps1
-!*.sql
 !*.tmpl
 !*.cs
 !*.csproj

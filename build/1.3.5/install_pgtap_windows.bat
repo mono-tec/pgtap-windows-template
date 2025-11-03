@@ -24,7 +24,7 @@ if errorlevel 2 ( echo キャンセルしました。 & pause & exit /b 0 )
 echo.
 
 REM ★必要に応じて手動で変更
-set PGROOT="C:\Program Files\PostgreSQL\17"
+set "PGROOT=C:\Program Files\PostgreSQL\17"
 
 if not exist "%PGROOT%\share\extension" (
   echo [ERROR] share\extension が見つかりません: "%PGROOT%\share\extension"
