@@ -19,6 +19,8 @@ set "PGDATABASE=#PGDATABASE#"  REM 例: appdb_test
 
 set "PGCONNECT=-h %PGHOST% -p %PGPORT% -U %PGUSER% -d %PGDATABASE%"
 
+set "PGCLIENTENCODING=SJIS"    REM PostgreSQL クライアントからのメッセージ出力Shift-JISに固定
+
 REM --- [2] Log directory & file setup ------------------------
 for /f "tokens=1-4 delims=/ " %%a in ("%date%") do set TODAY=%%a%%b%%c
 for /f "tokens=1-4 delims=:." %%a in ("%time%") do set NOW=%%a%%b%%c

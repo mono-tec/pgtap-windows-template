@@ -18,6 +18,8 @@ set "PGDATABASE_TEST=#PGDATABASE#" REM 任意のテスト対象DB名（例: appdb_test）
 set "PGCONNECT_ADMIN=-h %PGHOST% -p %PGPORT% -U %PGUSER% -d %PGDATABASE_ADMIN%"
 set "PGCONNECT_TEST=-h  %PGHOST% -p %PGPORT% -U %PGUSER% -d %PGDATABASE_TEST%"
 
+set "PGCLIENTENCODING=SJIS"		  REM PostgreSQL クライアントからのメッセージ出力Shift-JISに固定
+
 REM --- [2] サマリ & 確認 ---------------------------------------
 echo =============================================================
 echo  pgTAP Full Test Automation
