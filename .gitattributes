@@ -5,10 +5,12 @@
 
 # Batch files must use CRLF (Windows)
 *.bat text eol=crlf
+*.bat.tmpl text eol=crlf
 *.cmd text eol=crlf
 
 # SQL files use LF (Unix style)
 *.sql text eol=lf
+*.sql.tmpl text eol=lf
 
 # PowerShell scripts
 *.ps1 text eol=crlf
